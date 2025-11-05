@@ -1,0 +1,26 @@
+import express from 'express'
+import dotenv from 'dotenv'
+// import {prisma} from './prisma/client.js'
+// import  {router}  from './routes/authRouter.js'
+
+dotenv.config()
+const app = express()
+
+// milldeware
+app.use(express.json())
+// routes
+// app.use('/api/auth', router)
+
+// test 
+app.get('/', (req, res) =>{
+    res.send("bienvenu")
+})
+
+
+
+// Demarage du serveur
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, ()=>{
+    console.log(`Serveur démarré sur http://localhost:${PORT}`)
+} )

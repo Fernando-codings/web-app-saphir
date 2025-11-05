@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================
+// UTILISATEUR
+// =====================
+model User {
+  id                   String          @id @default(uuid())
+  email                String          @unique
+  name                 String
+  password_hash        String?         // nullable pour OAuth
+  provider             String          @default("local") // "local", "google", "apple"
+  provider_id          String?         @unique           // ID externe pour OAuth
+  email_verified       Boolean         @default(false)
+  is_active            Boolean         @default(true)
+  role                 String          @default("user") // "user" ou "admin"
+  global_token_version Int             @default(1)
+  last_login_at        DateTime?       // nullable
+  created_at           DateTime        @default(now())
+  updated_at           DateTime        @updatedAt
+
+  refresh_tokens       RefreshToken[]
+}
+
+// =====================
+// REFRESH TOKEN
+// =====================
+model RefreshToken {
+  id            String   @id @default(uuid())
+  token_hash    String   @unique @db.VarChar(64)
+  user_id       String
+  token_version Int
+  device_name   String?  @db.VarChar(255)
+  ip_address    String?  @db.Inet
+  user_agent    String?
+  expires_at    DateTime
+  revoked_at    DateTime?
+  last_used_at  DateTime?
+  created_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+}
