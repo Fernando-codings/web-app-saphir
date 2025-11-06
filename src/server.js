@@ -1,7 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
 // import {prisma} from './prisma/client.js'
-// import  {router}  from './routes/authRouter.js'
+import  {router}  from './routes/authRouter.js'
+import { testDBConnection } from './utils/helper.js'
 
 dotenv.config()
 const app = express()
@@ -9,7 +10,7 @@ const app = express()
 // milldeware
 app.use(express.json())
 // routes
-// app.use('/api/auth', router)
+app.use('/api/auth', router)
 
 // test 
 app.get('/', (req, res) =>{
@@ -21,6 +22,7 @@ app.get('/', (req, res) =>{
 // Demarage du serveur
 const PORT = process.env.PORT || 3000
 
-app.listen(PORT, ()=>{
+app.listen(PORT, async ()=>{
     console.log(`Serveur démarré sur http://localhost:${PORT}`)
+    await testDBConnection()
 } )
