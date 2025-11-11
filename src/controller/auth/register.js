@@ -1,9 +1,12 @@
-import { prisma } from '../prisma/client.js';
-import { registerSchema } from '../validation/authValidator.js';
-import { hash } from '../utils/helper.js';
-import { generateJWT, generateRandomtoken } from '../service/tokenService.js';
-
 // inscription de l'utlisateur
+import { prisma } from '../../prisma/client.js';
+import { registerSchema , loginSchema} from '../../validation/authValidator.js';
+import { hash} from '../../utils/helper.js';
+import { generateJWT, generateRandomtoken } from '../../service/tokenService.js';
+
+
+
+
 export const register = async (req, res) => {
 
   try {
@@ -15,6 +18,7 @@ export const register = async (req, res) => {
         details: error.details.map(e => e.message),
       });
     }
+    
     
     const { name, email, password } = value;
 
@@ -56,11 +60,11 @@ export const register = async (req, res) => {
     const token = generateJWT(user.id, user.role, user.global_token_version);
 
   // 6. Définition du Refresh Token dans un cookie HTTP-Only sécurisé
-    res.cookie('refreshToken', refreshBrut, {
-        httpOnly: true, // Empêche l'accès via JavaScript (protection XSS)
-        secure: process.env.NODE_ENV === 'production', // N'envoyer qu'en HTTPS en production
-        sameSite: 'strict', // Bonne pratique CSRF
-        expires: expires_at, // Fait correspondre l'expiration du cookie à celle en DB
+    res.cookie('RefreshToken', refreshBrut, {
+        httpOnly: true, 
+         secure: process.env.NODE_ENV === "production", 
+        sameSite: 'strict',
+        expires: expires_at, 
     });
 
   // 7. Envoi de la réponse de succès 
@@ -68,7 +72,7 @@ export const register = async (req, res) => {
       message: "Inscription réussie",
       user: { id: user.id, name: user.name, email: user.email },
       token,
-      refreshToken: refreshBrut, // ← à envoyer via cookie HTTP-only
+      
     });
 
   } catch (err) {
@@ -76,14 +80,3 @@ export const register = async (req, res) => {
     return res.status(500).json({ message: "Erreur interne du serveur" });
   }
 };
-
-
-// login 
-
-// export const login = ( res , req) =>{
-//   try {
-    
-//   } catch (error) {
-    
-//   }
-// }
